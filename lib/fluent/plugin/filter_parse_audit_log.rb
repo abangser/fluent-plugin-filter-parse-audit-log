@@ -10,7 +10,8 @@ class FluentParseAuditLogFilter < Fluent::Filter
   def filter(tag, time, record)
     line = record[@key]
     return record unless line
-    AuditLogParser.parse_line(line, flatten: @flatten)
+    result = AuditLogParser.parse_line(line, flatten: @flatten)
+    result.merge({:raw_data => line})
   rescue => e
     log.warn "failed to parse a audit log: #{line}", error_class: e.class, error: e.message
     log.warn_backtrace
